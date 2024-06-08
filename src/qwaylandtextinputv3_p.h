@@ -15,8 +15,8 @@
 // We mean it.
 //
 
+#include <qpa/qplatforminputcontext.h>
 #include <QtWaylandClient/QWaylandClientExtensionTemplate>
-#include <QtWaylandClient/private/qwaylandtextinputinterface_p.h>
 #include "qwayland-text-input-unstable-v3.h"
 #include "qwaylandinputmethodeventbuilder_p.h"
 #include <QLoggingCategory>
@@ -33,36 +33,45 @@ namespace QtWaylandClient
 
 class QWaylandTextInputv3;
 
-class Q_WAYLANDCLIENT_EXPORT QWaylandTextInputv3Manager
-	: public QtWayland::zwp_text_input_manager_v3,
-	  public QWaylandTextInputInterface,
-	  public QWaylandClientExtensionTemplate<QWaylandTextInputv3Manager> {
-    public:
+class Q_WAYLAND_CLIENT_EXPORT QWaylandTextInputv3Manager
+	: public QWaylandClientExtensionTemplate<QWaylandTextInputv3Manager>,
+	  public QtWayland::zwp_text_input_manager_v3 {
+	Q_OBJECT
 	friend class QWaylandTextInputv3;
+
+    public:
+	enum TextInputState {
+		update_state_change = 0, // updated state because it changed
+		update_state_full =
+			1, // full state after enter or input_method_changed event
+		update_state_reset = 2, // full state after reset
+		update_state_enter =
+			3, // full state after switching focus to a different widget on client side
+	};
+
 	QWaylandTextInputv3Manager();
 	~QWaylandTextInputv3Manager() override;
 
-	void reset() override;
-	void commit() override;
-	void updateState(Qt::InputMethodQueries queries,
-			 uint32_t flags) override;
+	void reset();
+	void commit();
+	void updateState(Qt::InputMethodQueries queries, uint32_t flags);
 	// TODO: not supported yet
-	void setCursorInsidePreedit(int cursor) override;
+	void setCursorInsidePreedit(int cursor);
 
-	bool isInputPanelVisible() const override;
-	QRectF keyboardRect() const override;
+	bool isInputPanelVisible() const;
+	QRectF keyboardRect() const;
 
-	QLocale locale() const override;
-	Qt::LayoutDirection inputDirection() const override;
+	QLocale locale() const;
+	Qt::LayoutDirection inputDirection() const;
 
-	void showInputPanel() override;
-	void hideInputPanel() override;
+	void showInputPanel();
+	void hideInputPanel();
 
-	void enableSurface(::wl_surface *surface) override
+	void enableSurface(::wl_surface *surface)
 	{
 		showInputPanel();
 	}
-	void disableSurface(::wl_surface *surface) override
+	void disableSurface(::wl_surface *surface)
 	{
 		hideInputPanel();
 	}
@@ -70,8 +79,6 @@ class Q_WAYLANDCLIENT_EXPORT QWaylandTextInputv3Manager
     protected:
 	QList<QWaylandTextInputv3 *> m_inputs;
 	QWaylandInputMethodEventBuilder m_builder;
-
-	::wl_surface *m_surface = nullptr; // ### Here for debugging purposes
 
 	struct PreeditInfo {
 		QString text;
@@ -104,13 +111,15 @@ class Q_WAYLANDCLIENT_EXPORT QWaylandTextInputv3Manager
 
 	bool m_condReselection = false;
 	bool m_panelVisible = false;
+
     private slots:
 	void onActiveChanged();
 };
 
-class Q_WAYLANDCLIENT_EXPORT QWaylandTextInputv3
-	: public QtWayland::zwp_text_input_v3,
-	  public QWaylandClientExtensionTemplate<QWaylandTextInputv3> {
+class Q_WAYLAND_CLIENT_EXPORT QWaylandTextInputv3
+	: public QWaylandClientExtensionTemplate<QWaylandTextInputv3>,
+	  public QtWayland::zwp_text_input_v3 {
+	Q_OBJECT
     public:
 	QWaylandTextInputv3(QWaylandTextInputv3Manager *m_manager,
 			    struct ::zwp_text_input_v3 *object);
@@ -130,7 +139,6 @@ class Q_WAYLANDCLIENT_EXPORT QWaylandTextInputv3
     private:
 	QWaylandTextInputv3Manager *m_manager;
 };
-
 }
 
 QT_END_NAMESPACE

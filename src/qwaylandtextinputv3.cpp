@@ -71,11 +71,6 @@ const Qt::InputMethodQueries supportedQueries3 =
 
 void QWaylandTextInputv3::zwp_text_input_v3_enter(struct ::wl_surface *surface)
 {
-	qCDebug(qLcQpaWaylandTextInput)
-		<< Q_FUNC_INFO << m_manager->m_surface << surface;
-
-	m_manager->m_surface = surface;
-
 	m_manager->m_pendingPreeditString.clear();
 	m_manager->m_pendingCommitString.clear();
 	m_manager->m_pendingDeleteBeforeText = 0;
@@ -89,16 +84,7 @@ void QWaylandTextInputv3::zwp_text_input_v3_leave(struct ::wl_surface *surface)
 {
 	qCDebug(qLcQpaWaylandTextInput) << Q_FUNC_INFO;
 
-	if (m_manager->m_surface != surface) {
-		qCWarning(qLcQpaWaylandTextInput())
-			<< Q_FUNC_INFO << "Got leave event for surface"
-			<< surface << "focused surface" << m_manager->m_surface;
-		return;
-	}
-
 	m_manager->m_currentPreeditString.clear();
-
-	m_manager->m_surface = nullptr;
 	m_manager->m_currentSerial = 0U;
 
 	disable();
@@ -168,13 +154,6 @@ void QWaylandTextInputv3::zwp_text_input_v3_done(uint32_t serial)
 	QObject *focusObject = QGuiApplication::focusObject();
 	if (!focusObject)
 		return;
-
-	if (!m_manager->m_surface) {
-		qCWarning(qLcQpaWaylandTextInput)
-			<< Q_FUNC_INFO << serial
-			<< "Surface is not enabled yet";
-		return;
-	}
 
 	qCDebug(qLcQpaWaylandTextInput)
 		<< Q_FUNC_INFO << "PREEDIT"
@@ -268,7 +247,7 @@ void QWaylandTextInputv3Manager::updateState(Qt::InputMethodQueries queries,
 	auto *window = static_cast<QWaylandWindow *>(
 		QGuiApplication::focusWindow()->handle());
 	auto *surface = window->wlSurface();
-	if (!surface || (surface != m_surface))
+	if (!surface)
 		return;
 
 	queries &= supportedQueries3;

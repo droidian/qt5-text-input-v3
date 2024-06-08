@@ -21,13 +21,21 @@ namespace QtWaylandClient
 {
 
 WaylandTextInputV3Context::WaylandTextInputV3Context()
-	: mTextInput(new QWaylandTextInputv3Manager())
 {
+	connect(qGuiApp, &QGuiApplication::screenAdded, this,
+		&WaylandTextInputV3Context::onScreenAdded);
 }
 
 WaylandTextInputV3Context::~WaylandTextInputV3Context()
 {
 	delete mTextInput;
+}
+
+void WaylandTextInputV3Context::onScreenAdded(QScreen *screen)
+{
+	Q_UNUSED(screen);
+	if (!mTextInput)
+		mTextInput = new QWaylandTextInputv3Manager();
 }
 
 bool WaylandTextInputV3Context::isValid() const
@@ -41,7 +49,7 @@ void WaylandTextInputV3Context::reset()
 
 	QPlatformInputContext::reset();
 
-	QWaylandTextInputInterface *inputInterface = textInput();
+	QWaylandTextInputv3Manager *inputInterface = textInput();
 	if (!inputInterface)
 		return;
 
@@ -52,7 +60,7 @@ void WaylandTextInputV3Context::commit()
 {
 	qCDebug(qLcQpaInputMethods) << Q_FUNC_INFO;
 
-	QWaylandTextInputInterface *inputInterface = textInput();
+	QWaylandTextInputv3Manager *inputInterface = textInput();
 	if (!inputInterface)
 		return;
 
@@ -72,7 +80,7 @@ void WaylandTextInputV3Context::update(Qt::InputMethodQueries queries)
 {
 	qCDebug(qLcQpaInputMethods) << Q_FUNC_INFO << queries;
 
-	QWaylandTextInputInterface *inputInterface = textInput();
+	QWaylandTextInputv3Manager *inputInterface = textInput();
 	if (!QGuiApplication::focusObject() || !inputInterface)
 		return;
 
@@ -90,13 +98,13 @@ void WaylandTextInputV3Context::update(Qt::InputMethodQueries queries)
 	}
 
 	inputInterface->updateState(
-		queries, QWaylandTextInputInterface::update_state_change);
+		queries, QWaylandTextInputv3Manager::update_state_change);
 }
 
 void WaylandTextInputV3Context::invokeAction(QInputMethod::Action action,
 					     int cursorPostion)
 {
-	QWaylandTextInputInterface *inputInterface = textInput();
+	QWaylandTextInputv3Manager *inputInterface = textInput();
 	if (!inputInterface)
 		return;
 
@@ -108,7 +116,7 @@ void WaylandTextInputV3Context::showInputPanel()
 {
 	qCDebug(qLcQpaInputMethods) << Q_FUNC_INFO;
 
-	QWaylandTextInputInterface *inputInterface = textInput();
+	QWaylandTextInputv3Manager *inputInterface = textInput();
 	if (!inputInterface)
 		return;
 
@@ -119,7 +127,7 @@ void WaylandTextInputV3Context::hideInputPanel()
 {
 	qCDebug(qLcQpaInputMethods) << Q_FUNC_INFO;
 
-	QWaylandTextInputInterface *inputInterface = textInput();
+	QWaylandTextInputv3Manager *inputInterface = textInput();
 	if (!inputInterface)
 		return;
 
@@ -130,7 +138,7 @@ bool WaylandTextInputV3Context::isInputPanelVisible() const
 {
 	qCDebug(qLcQpaInputMethods) << Q_FUNC_INFO;
 
-	QWaylandTextInputInterface *inputInterface = textInput();
+	QWaylandTextInputv3Manager *inputInterface = textInput();
 	if (!inputInterface)
 		return QPlatformInputContext::isInputPanelVisible();
 
@@ -141,7 +149,7 @@ QRectF WaylandTextInputV3Context::keyboardRect() const
 {
 	qCDebug(qLcQpaInputMethods) << Q_FUNC_INFO;
 
-	QWaylandTextInputInterface *inputInterface = textInput();
+	QWaylandTextInputv3Manager *inputInterface = textInput();
 	if (!inputInterface)
 		return QPlatformInputContext::keyboardRect();
 
@@ -152,7 +160,7 @@ QLocale WaylandTextInputV3Context::locale() const
 {
 	qCDebug(qLcQpaInputMethods) << Q_FUNC_INFO;
 
-	QWaylandTextInputInterface *inputInterface = textInput();
+	QWaylandTextInputv3Manager *inputInterface = textInput();
 	if (!inputInterface)
 		return QPlatformInputContext::locale();
 
@@ -163,7 +171,7 @@ Qt::LayoutDirection WaylandTextInputV3Context::inputDirection() const
 {
 	qCDebug(qLcQpaInputMethods) << Q_FUNC_INFO;
 
-	QWaylandTextInputInterface *inputInterface = textInput();
+	QWaylandTextInputv3Manager *inputInterface = textInput();
 	if (!inputInterface)
 		return QPlatformInputContext::inputDirection();
 
@@ -174,7 +182,7 @@ void WaylandTextInputV3Context::setFocusObject(QObject *object)
 {
 	qCDebug(qLcQpaInputMethods) << Q_FUNC_INFO;
 
-	QWaylandTextInputInterface *inputInterface = textInput();
+	QWaylandTextInputv3Manager *inputInterface = textInput();
 	if (!inputInterface)
 		return;
 
@@ -203,11 +211,11 @@ void WaylandTextInputV3Context::setFocusObject(QObject *object)
 		}
 		inputInterface->updateState(
 			Qt::ImQueryAll,
-			QWaylandTextInputInterface::update_state_enter);
+			QWaylandTextInputv3Manager::update_state_enter);
 	}
 }
 
-QWaylandTextInputInterface *WaylandTextInputV3Context::textInput() const
+QWaylandTextInputv3Manager *WaylandTextInputV3Context::textInput() const
 {
 	return mTextInput;
 }

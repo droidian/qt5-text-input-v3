@@ -1,20 +1,21 @@
-Source: qt6-text-input-v3
+Source: qt5-text-input-v3
 Section: libs
 Maintainer: Erik Inkinen <erik.inkinen@erikinkinen.fi>
 Priority: optional
 Build-Depends: pkg-kde-tools,
-               cmake,
-               qt6-base-dev,
-               qt6-base-private-dev,
-               qt6-wayland-dev,
-               qt6-wayland-private-dev,
-               qt6-wayland,
+               libwayland-dev,
+               libwayland-bin,
+               qtbase5-dev,
+               qtbase5-private-dev,
+               libqt5waylandclient5-dev,
+               qtwayland5-private-dev,
+               qtwayland5-dev-tools,
                pkg-config,
 Standards-Version: 4.5.1
 
-Package: qt6-text-input-v3
+Package: qt5-text-input-v3
 Architecture: any
 Multi-Arch: foreign
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${misc:Depends}, ${shlibs:Depends}
-Description: This package contains an input method plugin for Qt6 to support text_input_unstable_v3 Wayland protocol through QtWayland.
+Description: This package contains an input method plugin for Qt5 to support text_input_unstable_v3 Wayland protocol through QtWayland.

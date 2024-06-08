@@ -5,9 +5,9 @@
 
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
-export QT_SELECT := qt6
+export QT_SELECT := qt5
 
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
 %:
-	dh $@ --buildsystem=cmake --with pkgkde_symbolshelper
+	dh $@ --with pkgkde_symbolshelper

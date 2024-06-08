@@ -19,7 +19,7 @@
 
 #include <QPointer>
 
-#include <QtWaylandClient/private/qwaylandtextinputinterface_p.h>
+#include <QtWaylandClient/private/qwaylandinputcontext_p.h>
 #include <QtWaylandClient/private/qtwaylandclientglobal_p.h>
 
 #include "qwaylandtextinputv3_p.h"
@@ -59,10 +59,13 @@ class WaylandTextInputV3Context : public QPlatformInputContext {
 	void setFocusObject(QObject *object) override;
 
     private:
-	QWaylandTextInputInterface *textInput() const;
+	QWaylandTextInputv3Manager *textInput() const;
 
 	QPointer<QWindow> mCurrentWindow;
 	QWaylandTextInputv3Manager *mTextInput = nullptr;
+
+    private slots:
+	void onScreenAdded(QScreen *screen);
 };
 
 }
