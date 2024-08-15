@@ -4,15 +4,15 @@ setup: true
 
 orbs:
   continuation: circleci/continuation@0.1.2
-  cutie-shell-buildd: cutie-shell/cutie-shell-buildd-orb@volatile
+  droidian-buildd: droidian-releng/droidian-buildd-orb@volatile
 
 jobs:
   setup:
     executor: continuation/default
     resource_class: small
     steps:
-      - checkout
-      - cutie-shell-buildd/generate
+      - droidian-buildd/checkout
+      - droidian-buildd/generate
       - continuation/continue:
           configuration_path: generated_config.yml
 
@@ -22,4 +22,4 @@ workflows:
       - setup:
           filters:
             tags:
-              only: /^cutie\/.*/
+              only: /^droidian\/.*\/.*/
